@@ -1,0 +1,50 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.env
+*.env
+instance/
+*.sqlite3
+*.db
+*.log
+*venv
+
+# FastAPI
+*.pid
+*.swp
+*.swo
+*.bak
+*.tmp
+*.cache
+*.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# Node.js / React
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+build/
+dist/
+.DS_Store
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+Thumbs.db
+.DS_Store
+*.swp
+*.swo
