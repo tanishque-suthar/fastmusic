@@ -7,11 +7,22 @@ import shutil
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl, validator
 import uvicorn
 import yt_dlp
 
 app = FastAPI(title="FastMusic API", description="Download audio from YouTube URLs")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],  # Vite dev server and other common ports
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Content-Disposition"],  # Expose this header to frontend
+)
 
 # Create downloads directory if it doesn't exist
 DOWNLOADS_DIR = Path("downloads")
