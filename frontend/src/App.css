@@ -1,0 +1,250 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  color: #333;
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header Styles */
+.header {
+  background: white;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.logo-image {
+  width: 72px;
+  height: 72px;
+  /* transition: transform 0.3s ease; */
+  background: transparent;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  mix-blend-mode: multiply;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #212529;
+  margin: 0;
+  text-shadow: none;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.subtitle {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 0.2rem 0 0 0;
+  text-shadow: none;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  backdrop-filter: none;
+  max-width: none;
+  margin: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #6c757d;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 8px;
+}
+
+.tab:hover::before {
+  opacity: 1;
+}
+
+.tab:hover {
+  color: #212529;
+}
+
+.tab.active {
+  background: #212529;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+}
+
+/* Tab Content */
+.tab-content {
+  background: white;
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(20px);
+  min-height: 60px;
+  border: 1px solid #e9ecef;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+/* Footer */
+.footer {
+  background: white;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid #e9ecef;
+  padding: 2rem 0;
+  text-align: center;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0ea5e9;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .header .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .logo {
+    gap: 0.8rem;
+  }
+
+  .logo-title {
+    font-size: 2rem;
+  }
+
+  .tabs {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .tab-content {
+    padding: 2rem;
+    border-radius: 20px;
+  }
+
+  .main {
+    padding: 1.5rem 0;
+  }
+}

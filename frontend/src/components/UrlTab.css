@@ -1,0 +1,264 @@
+/* URL Tab Styles */
+.url-tab {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.url-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.url-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.url-description-text {
+    font-size: 1.1rem;
+    color: #6c757d;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.url-form {
+    margin-bottom: 2rem;
+}
+
+.url-input-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.url-input {
+    flex: 1;
+    padding: 1.3rem 1.8rem;
+    border: 2px solid #e8ebf0;
+    border-radius: 50px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.url-input:focus {
+    border-color: #212529;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(33, 37, 41, 0.08);
+    transform: translateY(-1px);
+}
+
+.url-input:disabled {
+    background: #f1f3f4;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.download-button {
+    background: #212529;
+    color: white;
+    border: none;
+    padding: 1.3rem 2.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 160px;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(33, 37, 41, 0.2);
+}
+
+.download-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(33, 37, 41, 0.4);
+    background: #495057;
+}
+
+.download-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Format Options */
+.format-options {
+    margin-bottom: 1.5rem;
+}
+
+.format-options h4 {
+    font-size: 1.1rem;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.format-radio-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.format-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.format-option:hover {
+    border-color: #212529;
+    background: #f8f9fa;
+}
+
+.format-option input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.format-option.selected {
+    border-color: #212529;
+    background: #f8f9fa;
+}
+
+/* URL Validation */
+.url-hint {
+    color: #718096;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.url-error {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #fed7d7;
+    border-radius: 25px;
+    border: 1px solid #feb2b2;
+}
+
+/* Success Message */
+.success-message {
+    background: #f0fff4;
+    color: #38a169;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #9ae6b4;
+}
+
+/* Error Message */
+.error-message {
+    background: #fee;
+    color: #c53030;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #feb2b2;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #212529;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .url-header {
+        margin-bottom: 2rem;
+    }
+
+    .url-title {
+        font-size: 1.8rem;
+    }
+
+    .url-description-text {
+        font-size: 1rem;
+    }
+
+    .url-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .download-button {
+        width: 100%;
+    }
+
+    .format-radio-group {
+        flex-direction: column;
+    }
+
+    .format-option {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .url-tab {
+        padding: 0 1rem;
+    }
+
+    .url-input {
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .download-button {
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .url-description {
+        margin-bottom: 2rem;
+    }
+
+    .url-title {
+        font-size: 1.5rem;
+    }
+
+    .url-description-text {
+        font-size: 0.95rem;
+    }
+}
