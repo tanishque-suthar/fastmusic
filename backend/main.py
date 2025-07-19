@@ -4,6 +4,7 @@ import base64
 from pathlib import Path
 from typing import Optional, List
 import shutil
+from enum import Enum
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
 from fastapi.responses import FileResponse
@@ -28,8 +29,19 @@ app.add_middleware(
 DOWNLOADS_DIR = Path("downloads")
 DOWNLOADS_DIR.mkdir(exist_ok=True)
 
+class AudioQuality(str, Enum):
+    LOW = "128"      # Low quality (128 kbps)
+    MEDIUM = "192"   # Medium quality (192 kbps)
+    HIGH = "256"     # High quality (256 kbps)
+    VERY_HIGH = "320"  # Very high quality (320 kbps)
+    
+    @classmethod
+    def default(cls):
+        return cls.HIGH  # Default to high quality
+
 class YouTubeRequest(BaseModel):
     encoded_url: str
+    quality: Optional[AudioQuality] = AudioQuality.default()
     
 class DownloadResponse(BaseModel):
     message: str
@@ -159,7 +171,7 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
-                'preferredquality': '320',
+                'preferredquality': request.quality.value,
             }],
         }
         

@@ -28,6 +28,45 @@
     margin-bottom: 2rem;
 }
 
+.quality-selector {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quality-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+}
+
+.quality-select {
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #e8ebf0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    background: #fafbfc;
+    color: #495057;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    min-width: 280px;
+}
+
+.quality-select:focus {
+    border-color: #212529;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.08);
+}
+
+.quality-select:hover {
+    border-color: #adb5bd;
+}
+
 .search-input-group {
     display: flex;
     gap: 1rem;

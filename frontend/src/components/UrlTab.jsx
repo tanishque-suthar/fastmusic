@@ -9,6 +9,14 @@ function UrlTab() {
     const [isDownloading, setIsDownloading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const [selectedQuality, setSelectedQuality] = useState('256')
+
+    const qualityOptions = [
+        { value: '128', label: 'Low (128 kbps)', description: 'Smaller file size' },
+        { value: '192', label: 'Medium (192 kbps)', description: 'Good balance' },
+        { value: '256', label: 'High (256 kbps)', description: 'Recommended' },
+        { value: '320', label: 'Very High (320 kbps)', description: 'Best quality' }
+    ]
 
     const isValidYouTubeUrl = (url) => {
         const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/
@@ -36,14 +44,22 @@ function UrlTab() {
             // Encode the YouTube URL
             const encodedUrl = btoa(url.trim())
 
+            const requestData = {
+                encoded_url: encodedUrl,
+                quality: selectedQuality
+            }
+
+            console.log('Frontend sending request data:', requestData)
+            console.log('Selected quality:', selectedQuality)
+            console.log('Encoded URL:', encodedUrl)
+            console.log('Original URL:', url.trim())
+
             const response = await fetch(`${API_BASE_URL}/download`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    encoded_url: encodedUrl
-                })
+                body: JSON.stringify(requestData)
             })
 
             if (!response.ok) {
@@ -129,6 +145,24 @@ function UrlTab() {
                             </>
                         )}
                     </button>
+                </div>
+
+                <div className="quality-selector">
+                    <label htmlFor="quality-select-url" className="quality-label">
+                        Audio Quality:
+                    </label>
+                    <select
+                        id="quality-select-url"
+                        value={selectedQuality}
+                        onChange={(e) => setSelectedQuality(e.target.value)}
+                        className="quality-select"
+                    >
+                        {qualityOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label} - {option.description}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </form>
 

@@ -10,6 +10,14 @@ function SearchTab() {
     const [isSearching, setIsSearching] = useState(false)
     const [downloadingIds, setDownloadingIds] = useState(new Set())
     const [error, setError] = useState('')
+    const [selectedQuality, setSelectedQuality] = useState('256')
+
+    const qualityOptions = [
+        { value: '128', label: 'Low (128 kbps)', description: 'Smaller file size' },
+        { value: '192', label: 'Medium (192 kbps)', description: 'Good balance' },
+        { value: '256', label: 'High (256 kbps)', description: 'Recommended' },
+        { value: '320', label: 'Very High (320 kbps)', description: 'Best quality' }
+    ]
 
     const handleSearch = async (e) => {
         e.preventDefault()
@@ -44,14 +52,23 @@ function SearchTab() {
             const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`
             const encodedUrl = btoa(youtubeUrl)
 
+            const requestData = {
+                encoded_url: encodedUrl,
+                quality: selectedQuality
+            }
+
+            console.log('SearchTab sending request data:', requestData)
+            console.log('Selected quality:', selectedQuality)
+            console.log('Video ID:', videoId)
+            console.log('YouTube URL:', youtubeUrl)
+            console.log('Encoded URL:', encodedUrl)
+
             const response = await fetch(`${API_BASE_URL}/download`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    encoded_url: encodedUrl
-                })
+                body: JSON.stringify(requestData)
             })
 
             if (!response.ok) {
@@ -114,6 +131,24 @@ function SearchTab() {
                         ) : null}
                         {isSearching ? 'Searching...' : 'Search'}
                     </button>
+                </div>
+
+                <div className="quality-selector">
+                    <label htmlFor="quality-select" className="quality-label">
+                        Audio Quality:
+                    </label>
+                    <select
+                        id="quality-select"
+                        value={selectedQuality}
+                        onChange={(e) => setSelectedQuality(e.target.value)}
+                        className="quality-select"
+                    >
+                        {qualityOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label} - {option.description}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </form>
 
