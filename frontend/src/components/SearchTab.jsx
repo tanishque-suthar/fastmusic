@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './SearchTab.css'
+import { cleanTitle } from '../utils/titleUtils'
 
 const API_BASE_URL = 'http://localhost:8000'
 
@@ -63,11 +64,14 @@ function SearchTab() {
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.mp3`
+            // a.download = `${cleanTitle(title).replace(/[^a-z0-9\s]/gi, '_')}.mp3`
+            a.download = `${cleanTitle(title)}.mp3`
             document.body.appendChild(a)
             a.click()
             window.URL.revokeObjectURL(url)
             document.body.removeChild(a)
+            console.log(`Downloaded: ${title}`)
+            console.log(`Downloaded: ${cleanTitle(title)}`)
 
         } catch (err) {
             setError(err.message || 'Download failed. Please try again.')
@@ -135,7 +139,7 @@ function SearchTab() {
                                 </div>
 
                                 <div className="result-info">
-                                    <h4 className="result-title">{result.title}</h4>
+                                    <h4 className="result-title">{cleanTitle(result.title)}</h4>
                                     <p className="result-channel">{result.channel}</p>
                                 </div>
 

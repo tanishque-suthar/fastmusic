@@ -151,7 +151,6 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
             'embed_metadata': True,
             'add_metadata': True,
             'noplaylist': True,
-            'restrictfilenames': True,
             'trim_filenames': 100,
             'socket_timeout': 300,  # 5 minute timeout
             'retries': 3,
@@ -216,8 +215,7 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
         return FileResponse(
             path=str(downloaded_file),
             media_type="audio/mpeg",
-            filename=downloaded_file.name,
-            headers={"Content-Disposition": f"attachment; filename={downloaded_file.name}"}
+            headers={"Content-Disposition": f'attachment; filename="{downloaded_file.name}"'}
         )
         
     except Exception as e:

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './UrlTab.css'
+import { cleanTitle } from '../utils/titleUtils'
 
 const API_BASE_URL = 'http://localhost:8000'
 
@@ -63,7 +64,17 @@ function UrlTab() {
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
                 if (filenameMatch) {
-                    filename = filenameMatch[1]
+                    // Clean the filename by removing underscores and UIDs
+                    const originalFilename = filenameMatch[1]
+                    const nameWithoutExt = originalFilename.replace(/\.(mp3|mp4|wav|m4a)$/i, '')
+                    const cleanedName = cleanTitle(nameWithoutExt)
+                    const extension = originalFilename.match(/\.(mp3|mp4|wav|m4a)$/i)?.[0] || '.mp3'
+                    filename = cleanedName + extension
+                    console.log(`Cleaned filename: ${filename}`)
+                    console.log(`Original filename: ${originalFilename}`)
+                    console.log(`Name without extension: ${nameWithoutExt}`)
+                    console.log(`Cleaned name: ${cleanedName}`)
+                    console.log(`Extension: ${extension}`)
                 }
             }
 
