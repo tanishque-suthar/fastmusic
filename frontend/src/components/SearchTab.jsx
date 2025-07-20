@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './SearchTab.css'
 import { cleanTitle } from '../utils/titleUtils'
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = 'https://fastmusic.onrender.com'
 
 function SearchTab() {
     const [searchQuery, setSearchQuery] = useState('')
