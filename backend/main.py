@@ -158,7 +158,8 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
         unique_id = str(uuid.uuid4())[:8]
         output_template = DOWNLOADS_DIR / f"%(title)s_{unique_id}.%(ext)s"
         
-        # Configure yt-dlp options
+        # Configure yt-dlp options optimized for server environment
+        # Strategy 1: Balanced approach - good features but YouTube-friendly
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': str(output_template),
@@ -169,10 +170,17 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
             'add_metadata': True,
             'noplaylist': True,
             'trim_filenames': 100,
-            'socket_timeout': 300,  # 5 minute timeout
-            'retries': 3,
+            'socket_timeout': 180,  # Reduced from 300s
+            'retries': 3,  # Reduced from 5
+            'fragment_retries': 3,  # Reduced from 5
             'ignoreerrors': False,
-            'no_warnings': False,
+            'no_warnings': True,  # Less verbose
+            # Simplified headers - less suspicious
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+            },
+            # Removed extractor_args that might trigger detection
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -180,43 +188,141 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
             }],
         }
         
-        # Download using yt-dlp
+        # Download using yt-dlp with multiple fallback strategies
+        download_successful = False
+        last_error = None
+        successful_strategy = None
+        
+        # Strategy 1: Full headers and options
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                # Extract info first to validate URL
-                # info = ydl.extract_info(youtube_url, download=False)
-                # if not info:
-                #     raise HTTPException(
-                #         status_code=400,
-                #         detail="Could not extract video information"
-                #     )
-                
-                # Download the audio
                 ydl.download([youtube_url])
+                download_successful = True
+                successful_strategy = "Strategy 1 (Full options)"
+                print(f"✅ {successful_strategy} succeeded")
                 
-        except yt_dlp.DownloadError as e:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Failed to download audio: {str(e)}"
-            )
-        except yt_dlp.ExtractorError as e:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Failed to extract video information: {str(e)}"
-            )
         except Exception as e:
-            if "timeout" in str(e).lower():
+            last_error = e
+            print(f"❌ Strategy 1 failed: {str(e)}")
+            
+            # Strategy 2: Minimal options with different user agent
+            try:
+                fallback_opts = {
+                    'format': 'bestaudio/best',
+                    'outtmpl': str(output_template),
+                    'extractaudio': True,
+                    'audioformat': 'mp3',
+                    'audioquality': 0,
+                    'noplaylist': True,
+                    'quiet': True,
+                    'no_warnings': True,
+                    'socket_timeout': 180,
+                    'retries': 3,
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                    },
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': request.quality.value,
+                    }],
+                }
+                
+                with yt_dlp.YoutubeDL(fallback_opts) as ydl_fallback:
+                    ydl_fallback.download([youtube_url])
+                    download_successful = True
+                    successful_strategy = "Strategy 2 (Minimal options)"
+                    print(f"✅ {successful_strategy} succeeded")
+                    
+            except Exception as e2:
+                last_error = e2
+                print(f"❌ Strategy 2 failed: {str(e2)}")
+                
+                # Strategy 3: Ultra minimal - no postprocessing, just download
+                try:
+                    minimal_opts = {
+                        'format': 'bestaudio[ext=m4a]/bestaudio/best',
+                        'outtmpl': str(DOWNLOADS_DIR / f"%(title)s_{unique_id}.%(ext)s"),
+                        'noplaylist': True,
+                        'quiet': True,
+                        'no_warnings': True,
+                        'socket_timeout': 120,
+                        'retries': 2,
+                        'http_headers': {
+                            'User-Agent': 'yt-dlp/2024.07.01',
+                        },
+                    }
+                    
+                    with yt_dlp.YoutubeDL(minimal_opts) as ydl_minimal:
+                        ydl_minimal.download([youtube_url])
+                        download_successful = True
+                        successful_strategy = "Strategy 3 (Ultra minimal)"
+                        print(f"✅ {successful_strategy} succeeded")
+                        
+                        # Convert to MP3 manually if needed
+                        downloaded_files_any = list(DOWNLOADS_DIR.glob(f"*_{unique_id}.*"))
+                        if downloaded_files_any:
+                            original_file = downloaded_files_any[0]
+                            if not original_file.suffix == '.mp3':
+                                # Convert to MP3
+                                mp3_file = original_file.with_suffix('.mp3')
+                                try:
+                                    import subprocess
+                                    subprocess.run([
+                                        'ffmpeg', '-i', str(original_file), 
+                                        '-acodec', 'mp3', '-ab', f'{request.quality.value}k',
+                                        str(mp3_file)
+                                    ], check=True, capture_output=True)
+                                    os.remove(original_file)  # Remove original
+                                    print(f"🔄 Converted {original_file.suffix} to MP3")
+                                except Exception:
+                                    # If conversion fails, just rename the file
+                                    original_file.rename(mp3_file)
+                                    print(f"📝 Renamed {original_file.suffix} to .mp3")
+                        
+                except Exception as e3:
+                    last_error = e3
+                    print(f"❌ Strategy 3 failed: {str(e3)}")
+        
+        if download_successful:
+            print(f"🎉 Download completed using {successful_strategy}")
+        
+        # Handle final errors if all strategies failed
+        if not download_successful:
+            print(f"💥 All strategies failed. Last error: {str(last_error)}")
+            error_msg = str(last_error)
+            if any(keyword in error_msg.lower() for keyword in ["bot", "precondition", "player response", "json"]):
+                raise HTTPException(
+                    status_code=503,
+                    detail="YouTube is currently blocking automated requests. This is a temporary issue. Please try again in a few minutes or try a different video."
+                )
+            elif "timeout" in error_msg.lower():
                 raise HTTPException(
                     status_code=408,
-                    detail="Download timeout - video may be too long or connection is slow"
+                    detail="Download timeout - the video may be too long or the connection is slow. Please try again."
                 )
-            raise HTTPException(
-                status_code=500,
-                detail=f"Download failed: {str(e)}"
-            )
+            elif isinstance(last_error, yt_dlp.DownloadError):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Failed to download audio: {error_msg}"
+                )
+            elif isinstance(last_error, yt_dlp.ExtractorError):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Failed to extract video information: {error_msg}"
+                )
+            else:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Download failed: {error_msg}"
+                )
         
-        # Find the downloaded file
+        # Find the downloaded file (could be mp3 or other format that was converted)
         downloaded_files = list(DOWNLOADS_DIR.glob(f"*_{unique_id}.mp3"))
+        
+        # If no MP3 found, look for any file with the unique ID
+        if not downloaded_files:
+            downloaded_files = list(DOWNLOADS_DIR.glob(f"*_{unique_id}.*"))
         
         if not downloaded_files:
             raise HTTPException(
@@ -225,6 +331,12 @@ async def download_youtube_audio(request: YouTubeRequest, background_tasks: Back
             )
         
         downloaded_file = downloaded_files[0]
+        
+        # Ensure the file has .mp3 extension for proper download
+        if not downloaded_file.suffix == '.mp3':
+            mp3_file = downloaded_file.with_suffix('.mp3')
+            downloaded_file.rename(mp3_file)
+            downloaded_file = mp3_file
         
         # Schedule file cleanup after response is sent
         background_tasks.add_task(cleanup_file, str(downloaded_file))
